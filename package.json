@@ -1,0 +1,42 @@
+{
+  "name": "sagus",
+  "version": "1.0.0",
+  "description": "A Typescript helper or utility library ",
+  "main": "src/index.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:ci": "jest --ci",
+    "prep-dist": "node scripts/prepDist.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leanderpaul/spark.git"
+  },
+  "keywords": [
+    "ts-helper",
+    "ts-utils",
+    "tsutils"
+  ],
+  "author": "Leander Paul F",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leanderpaul/spark/issues"
+  },
+  "homepage": "https://github.com/leanderpaul/spark#readme",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.4.12",
+    "@types/uuid": "^8.3.1",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "typedoc": "^0.21.5",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "uuid": "^8.3.2"
+  }
+}
