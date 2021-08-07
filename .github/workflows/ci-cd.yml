@@ -5,9 +5,11 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  release:
+    types: [published]
 
 jobs:
-  # Testing on Linux and Windows Machine
+  # Testing on Linux and Windows Machine using NodeJS version 12 and 14
   test:
     runs-on: ${{ matrix.os }}
     strategy:
