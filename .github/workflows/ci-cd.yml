@@ -40,6 +40,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run prep-dist
-      - run: npm publish --prefix dist
+      - run: cd dist && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
