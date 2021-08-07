@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leanderpaul/spark.git"
+    "url": "git+https://github.com/leanderpaul/sagus.git"
   },
   "keywords": [
     "ts-helper",
@@ -22,9 +22,9 @@
   "author": "Leander Paul F",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/leanderpaul/spark/issues"
+    "url": "https://github.com/leanderpaul/sagus/issues"
   },
-  "homepage": "https://github.com/leanderpaul/spark#readme",
+  "homepage": "https://github.com/leanderpaul/sagus#readme",
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/jest": "^26.0.24",
