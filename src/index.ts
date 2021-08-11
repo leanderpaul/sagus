@@ -106,7 +106,7 @@ export function compareHash(str: string, hashedStr: string) {
  * @param encoding The encoding to be used to encode the data
  * @returns Encoded string
  */
-export function encode(data: any, encoding: BufferEncoding = 'base64') {
+export function encode<T>(data: T, encoding: BufferEncoding = 'base64') {
   const str = JSON.stringify(data);
   return Buffer.from(str).toString(encoding);
 }
@@ -118,7 +118,7 @@ export function encode(data: any, encoding: BufferEncoding = 'base64') {
  * @param encoding The encoding to be used to decode the data
  * @returns Decoded data
  */
-export function decode(str: string, encoding: BufferEncoding = 'base64') {
+export function decode<T = any>(str: string, encoding: BufferEncoding = 'base64'): T {
   const data = Buffer.from(str, encoding);
   return JSON.parse(data.toString());
 }
@@ -130,7 +130,7 @@ export function decode(str: string, encoding: BufferEncoding = 'base64') {
  * @param secretKey The secret key that is used to encrypt the data. **Ensure that the length of the secret key is 32 Bytes otherwise error will be thrown**
  * @returns The iv and the encrypted data
  */
-export function encrypt(data: any, secretKey: string | Buffer) {
+export function encrypt<T>(data: T, secretKey: string | Buffer) {
   const str = JSON.stringify(data);
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-ctr', secretKey, iv);
@@ -146,7 +146,7 @@ export function encrypt(data: any, secretKey: string | Buffer) {
  * @param iv The Initialization vector
  * @returns The decrypted data
  */
-export function decrypt(result: { iv: string; encryptedData: string }, secretKey: string | Buffer) {
+export function decrypt<T = any>(result: { iv: string; encryptedData: string }, secretKey: string | Buffer): T {
   const ivBuffer = Buffer.from(result.iv, 'base64');
   const enDataBuffer = Buffer.from(result.encryptedData, 'base64');
   const decipher = crypto.createDecipheriv('aes-256-ctr', secretKey, ivBuffer);
@@ -212,14 +212,14 @@ export function removeKeys<T extends object, K extends keyof T>(obj: T, keys: K[
  * @param value Any object or type
  * @returns Whether the object is valid or not
  */
-export function isValid(value: any) {
+export function isValid<T>(value: T): value is NonNullable<T> {
   if (value === undefined || value === null) return false;
   else if (typeof value === 'string') return !(value.trim() === '');
   else if (typeof value === 'number' && isNaN(value)) return false;
   return true;
 }
 
-export function isValidObject(obj: any) {
+export function isValidObject<T>(obj: T): obj is NonNullable<T> {
   const valid = isValid(obj);
   if (valid === false) return false;
   if (Array.isArray(obj)) return obj.length > 0;
