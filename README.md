@@ -3,7 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/sagus?style=for-the-badge)](https://www.npmjs.com/package/sagus)
 [![Build Status](https://img.shields.io/github/workflow/status/leanderpaul/sagus/ci-cd?style=for-the-badge)](https://github.com/leanderpaul/sagus/actions/workflows/ci-cd.yml)
 
-A Typescript helper library
+A Typescript helper library for server.
 
 ## Install
 
@@ -44,6 +44,34 @@ sagus.genUID('', '-suffix');
 
 sagus.genUID('prefix-', '-suffix');
 // => 'prefix-2kabh61y04ks0asvvp-suffix'
+```
+
+### sagus.genAutoID(\[namespace\])
+
+Generates a incremental ID for each namespace.
+
+Example:
+
+```js
+sagus.genAutoID(); // => 0
+sagus.genAutoID(); // => 1
+sagus.genAutoID('users'); // => 0
+sagus.genAutoID('users'); // => 1
+sagus.genAutoID(); // => 2
+sagus.genAutoID('users'); // => 2
+```
+
+### sagus.resetAutoID(\[namespace\])
+
+Resets an Auto ID counter and start again from 0.
+
+Example:
+
+```js
+sagus.genAutoID(); // => 0
+sagus.genAutoID(); // => 1
+sagus.resetAutoID();
+sagus.genAutoID(); // => 0
 ```
 
 ### sagus.genRandom([size[, encoding]])
@@ -219,4 +247,24 @@ sagus.isValidObject({ name: 'John Doe' }); // => true
 sagus.isValidObject({ name: '' }); // => true
 sagus.isValidObject(['hello']); // => true
 sagus.isValidObject([undefined]); // => true
+```
+
+### sagus.iterate(input)
+
+creates a generator function that can iterate the array or object provided as the input.
+
+Example:
+
+```js
+const arr = [1, '2', 3, '4'];
+const iterator = sagus.iterate(arr);
+iterator.next(); // => { value: { key: 0, value: 1 }, done: false }
+iterator.next(); // => { value: { key: 1, value: '2' }, done: false }
+iterator.next(); // => { value: { key: 2, value: 3 }, done: false }
+iterator.next(); // => { value: { key: 3, value: '4' }, done: true }
+
+const obj = { 1: 'One', 2: 'Two' };
+const iterator = sagus.iterate(obj);
+iterator.next(); // => { value: { key: '1', value: 'One' }, done: false }
+iterator.next(); // => { value: { key: '2', value: 'Two' }, done: true }
 ```

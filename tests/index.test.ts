@@ -44,6 +44,44 @@ describe('genUUID()', function () {
   });
 });
 
+describe('genAutoID() and resetAutoID()', function () {
+  const namespace = { users: 'users' };
+
+  it(`should return 0 and 1 for namespace 'users'`, function () {
+    let autoID = sagus.genAutoID(namespace.users);
+    expect(autoID).toBe(0);
+    autoID = sagus.genAutoID(namespace.users);
+    expect(autoID).toBe(1);
+  });
+
+  it(`should return 0 and 1 for namespace undefined`, function () {
+    let autoID = sagus.genAutoID();
+    expect(autoID).toBe(0);
+    autoID = sagus.genAutoID();
+    expect(autoID).toBe(1);
+  });
+
+  it(`should return 2 for namespace undefined and 'users`, function () {
+    let autoID = sagus.genAutoID(namespace.users);
+    expect(autoID).toBe(2);
+    autoID = sagus.genAutoID();
+    expect(autoID).toBe(2);
+  });
+
+  it(`should return 0 for namespace 'users' and undefined after reseting it`, function () {
+    sagus.resetAutoID(namespace.users);
+    sagus.resetAutoID();
+    let autoID = sagus.genAutoID(namespace.users);
+    expect(autoID).toBe(0);
+    autoID = sagus.genAutoID();
+    expect(autoID).toBe(0);
+  });
+
+  it('should not throw error for inalid namespace reset', function () {
+    expect(sagus.resetAutoID('invalid-namespace')).toBe(undefined);
+  });
+});
+
 describe('genRandom()', function () {
   it('should generate random hex of size 32', function () {
     const str = sagus.genRandom();
@@ -294,5 +332,36 @@ describe('isValidObject()', function () {
 
   it('should return true for array with member undefined', function () {
     expect(sagus.isValidObject([undefined])).toBe(true);
+  });
+});
+
+describe('iterate()', function () {
+  it('should iterate array of string and numbers', function () {
+    const arr = [1, '2', 3, '4'];
+    const iterator = sagus.iterate(arr);
+    expect(iterator.next()).toEqual({ value: { key: 0, value: arr[0] }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: 1, value: arr[1] }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: 2, value: arr[2] }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: 3, value: arr[3] }, done: true });
+  });
+
+  it('should iterate array of arrays', function () {
+    const arr = [
+      [1, 'one'],
+      [2, 'Two'],
+      [3, 'Three'],
+    ];
+    const iterator = sagus.iterate(arr);
+    expect(iterator.next()).toEqual({ value: { key: 0, value: arr[0] }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: 1, value: arr[1] }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: 2, value: arr[2] }, done: true });
+  });
+
+  it('should iterate objects', function () {
+    const obj = { 1: 'One', 2: 'Two', 3: 'Three' };
+    const iterator = sagus.iterate(obj);
+    expect(iterator.next()).toEqual({ value: { key: '1', value: 'One' }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: '2', value: 'Two' }, done: false });
+    expect(iterator.next()).toEqual({ value: { key: '3', value: 'Three' }, done: true });
   });
 });

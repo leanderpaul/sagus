@@ -20,6 +20,7 @@ import { v1 } from 'uuid';
 const pid = process.pid.toString(36);
 let mac = '';
 let lastTime = 0;
+let autoIDGenerators: Record<string | number, Generator<number, number, undefined>> = {};
 
 if (process?.pid) {
   const netInterfaces = os.networkInterfaces();
@@ -46,6 +47,13 @@ function getUniqueTime() {
   return (lastTime = time > last ? time : last + 1);
 }
 
+function* autoIDGenerator(): Generator<number, number, undefined> {
+  let id = 0;
+  while (true) {
+    yield id++;
+  }
+}
+
 /**
  * Generates a globally unique identifier based on RFC4122 version 1
  *
@@ -64,6 +72,30 @@ export function genUUID() {
  */
 export function genUID(prefix = '', suffix = '') {
   return prefix + mac + pid + getUniqueTime().toString(36) + suffix;
+}
+
+/**
+ * Generates a incremental unique ID for each namespace
+ *
+ * @param namespace The auto ID namespace
+ * @returns a unique ID in the namespace incrementaly
+ */
+export function genAutoID(namespace: string | number = '') {
+  let generator = autoIDGenerators[namespace];
+  if (generator === undefined) {
+    generator = autoIDGenerator();
+    autoIDGenerators[namespace] = generator;
+  }
+  return generator.next().value;
+}
+
+/**
+ * Resets the counter of the namespace.
+ *
+ * @param namespace The auto ID namespace
+ */
+export function resetAutoID(namespace: string | number = '') {
+  if (autoIDGenerators[namespace]) delete autoIDGenerators[namespace];
 }
 
 /**
@@ -219,6 +251,12 @@ export function isValid<T>(value: T): value is NonNullable<T> {
   return true;
 }
 
+/**
+ * Validates the object.
+ *
+ * @param obj any object
+ * @returns Whether an object is valid and has valid data in it
+ */
 export function isValidObject<T>(obj: T): obj is NonNullable<T> {
   const valid = isValid(obj);
   if (valid === false) return false;
@@ -227,4 +265,28 @@ export function isValidObject<T>(obj: T): obj is NonNullable<T> {
   return true;
 }
 
-export default { genUID, genUUID, genRandom, hash, compareHash, encode, decode, encrypt, decrypt, trimObject, pickKeys, removeKeys, isValid, isValidObject };
+/**
+ * Creates an iterator for the input.
+ *
+ * @param input the object or array that needs to be iterated
+ * @returns a generator function that iterates the input provided
+ */
+export function* iterate<T extends object, K extends keyof T>(input: T): Generator<{ key: K; value: T[K] }, { key: K; value: T[K] }> {
+  if (Array.isArray(input)) {
+    for (let index = 0; index < input.length - 1; index++) {
+      yield { key: index as K, value: input[index] as T[K] };
+    }
+    const lastIndex = input.length - 1;
+    return { key: lastIndex as K, value: input[lastIndex]! };
+  }
+  const entries = Object.entries(input);
+  for (let index = 0; index < entries.length - 1; index++) {
+    const [key, value] = entries[index]!;
+    yield { key: key as K, value };
+  }
+  const lastIndex = entries.length - 1;
+  const [key, value] = entries[lastIndex]!;
+  return { key: key as K, value };
+}
+
+export default { genUID, genUUID, genAutoID, resetAutoID, genRandom, hash, compareHash, encode, decode, encrypt, decrypt, trimObject, pickKeys, removeKeys, isValid, isValidObject, iterate };
